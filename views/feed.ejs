@@ -1,0 +1,17 @@
+<%- include('partials/header') -%>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <ul class="row list-unstyled">
+        <!-- what this code is doing is talking to the controller on the server-side, doing whatever it needs to (which, in this case, is showing the images), and then communicating back to this View -->
+        <% for(var i = 0; i < posts.length; i++) {%>
+          <li class="col-6 justify-content-between mt-5">
+            <!-- this hyperlink is grabbing the unique id, and creating a path "/post/" that contains the unique id of that particular post. This way, it can do something that pertains to that specific post. It gets the "/post" route from the server.js file -->
+            <a href="/post/<%= posts[i]._id%>">
+              <img class="img-fluid" src="<%= posts[i].image%>">
+            </a>
+          </li>
+        <% } %>
+        </ul>
+    </div>
+  </div>  
+<%- include('partials/footer') -%>

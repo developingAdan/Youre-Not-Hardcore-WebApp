@@ -1,0 +1,89 @@
+<%- include('partials/header') -%>
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-6">
+      <h2><%= post.title %></h2>
+      <img class="img-fluid" src="<%= post.image%>" />
+      <div class="row justify-content-between">
+
+        <!-- what we see being used under here is method override. Form elements can only be used by a POST method, but we use method override to allow for likes (PUT) and delete (DELETE) requests -->
+        <form
+          class="col-1"
+          action="/post/likePost/<%= post.id %>?_method=PUT"
+          method="POST"
+        >
+          <button class="btn btn-primary fa fa-heart" type="submit"></button>
+        </form>
+        <h3 class="col-3">Likes: <%= post.likes %></h3>
+        <%if(post.user == user.id){ %>
+        <form
+          action="/post/deletePost/<%= post.id %>?_method=DELETE"
+          method="POST"
+          class="col-3"
+        >
+          <button class="btn btn-primary fa fa-trash" type="submit"></button>
+        </form>
+        <%}%>
+      </div>
+    </div>
+    <div class="col-3 mt-5">
+      <p><%= post.caption %></p>
+    </div>
+
+    <div class="mt-5">
+      <h2>Add a comment</h2>
+
+      <!-- this is the Form we use to get inputs that users put in -->
+      <!-- this Form is for individual components to be bundled together and be sent up to our controllers at the same time. All the info gets bundled and sent together, this is what this Form is for.  -->
+
+      <!-- the action ("action=") that this form means is that whenever someone sends the Form (user clicks the submit button), that route "/post/createPost" is taken.  -->
+      <!-- we DON'T use method override here, because a Form is SUPPOSED to be a POST request. As opposed to PUT requests. If we wanted to PUT (or update) someting, then we would use method override -->
+
+      <!-- the FIRST place the data goes after user clicks the submit button is the server.js file. It is the ONLY (for right now) component that is "listening" for stuff to happen. So, in this case it would go to line 58 app.use("/post", postRoutes), and then it would follow that route, etc.  -->
+      
+      <form action="/comment/createComment/<%= post._id%>" method="POST">
+
+        <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <input type="text" class="form-control" id="comment" name="comment">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <!-- Form ends here  -->
+
+    </div>
+
+    <ul>
+      <% for(var i = 0; i < comments.length; i++) {%>
+        <li class="col-6 justify-content-between mt-5">
+          <!-- this hyperlink is grabbing the unique id, and creating a path "/post/" that contains the unique id of that particular post. This way, it can do anything that pertains to that specific post. Here, it gets the "/post" route from the server.js file -->
+
+          <!-- the ".comment" property is being grabbed from the Comment.js model schema -->
+          User <%= comments[i].createdBy%>
+          
+          says: "<%= comments[i].comment%>"
+          <br>
+          <!-- we are passing the user.id used under here, into this View via Line 32 in posts.js controller file -->
+          <%if(comments[i].createdById == user.id) {%>
+
+          <form
+          action="/comment/deleteComment/<%=post._id%>/<%= comments[i]._id %>?_method=DELETE" method="POST"
+        >
+          <button class="btn btn-outline-danger" type="submit">Delete</button>
+
+        </form>
+        <% } %>
+
+        </li>
+      <% } %>
+    </ul>
+
+    <div class="col-6 mt-5">
+      <a class="btn btn-primary" href="/profile">Return to Profile</a>
+      <a class="btn btn-primary" href="/feed">Return to Feed</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') -%>
